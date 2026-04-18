@@ -1,0 +1,72 @@
+# configs/experiment/base.yaml
+# ============================================================
+# lid Research — Base Experiment Configuration
+# All experiments inherit from this file.
+# Override specific keys per experiment.
+# ============================================================
+
+defaults:
+  - model: llama-7b
+  - dataset: truthfulqa
+  - _self_
+
+# ── Experiment Identity ──────────────────────────────────────
+experiment:
+  name: "lid-base"
+  seed: 42
+  tags: []                   # e.g. ["week2", "baseline", "dola"]
+  notes: ""
+
+# ── lid Core Hyperparameters ────────────────────────────────
+lid:
+  # Perturbation magnitude (grid search: Phase 1)
+  # Expected optimal: alpha ≈ 0.05
+  alpha: 0.05
+  alpha_grid: [0.01, 0.025, 0.05, 0.1]   # Phase 1 calibration sweep
+
+  # Composite score weighting
+  w_I: 0.5                   # weight for I(t) vs (1-q(t))
+
+  # Peak detection
+  peak_multiplier: 1.5       # threshold = mean(Z) + peak_multiplier * std(Z)
+  peak_min_width: 1          # min tokens for a valid peak
+
+  # RNG
+  perturb_seed: 42
+
+# ── Layer Selection ─────────────────────────────────────────
+layers:
+  strategy: "importance"     # "importance" | "uniform" | "top_k" | "all"
+  k: 12                      # number of layers to monitor
+  cumsum_target: 0.80        # select layers until cumsum(S) ≈ 80%
+  # Importance weights (from Strategy 2 in formulas doc)
+  sg_weight: 0.4             # gradient sensitivity
+  sv_weight: 0.3             # activation variance
+  si_weight: 0.3             # inter-layer independence
+
+# ── Evaluation ──────────────────────────────────────────────
+eval:
+  batch_size: 1
+  max_new_tokens: 200
+  n_examples: null           # null = use full dataset split
+  split: "test"
+  metrics:
+    - auroc
+    - auprc
+    - lead_time
+    - fpr_at_tpr80
+    - overhead_ratio
+
+# ── Logging ────────────────────────────────────────────────
+logging:
+  wandb: true
+  project: "lid-research"
+  log_trajectories: false    # log I/q/Z traces per example (expensive)
+  log_every_n: 10
+
+# ── Output ─────────────────────────────────────────────────
+output:
+  dir: "outputs/"
+  save_scores: true
+  save_figures: true
+  save_checkpoints: false

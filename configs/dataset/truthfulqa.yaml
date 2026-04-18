@@ -1,0 +1,46 @@
+# configs/dataset/truthfulqa.yaml
+# ============================================================
+# TruthfulQA — Primary in-distribution benchmark
+# 817 questions across 38 categories
+# HuggingFace: truthful_qa / generation split
+# ============================================================
+
+dataset:
+  name: "truthfulqa"
+  hf_id: "truthful_qa"
+  hf_config: "generation"
+  split_map:
+    dev: "validation[:100]"    # 100 examples for Phase 1 calibration
+    test: "validation[100:]"   # remaining for final eval
+  label_column: "best_answer"
+  question_column: "question"
+
+  # Annotation
+  expected_hallucination_rate: 0.10   # ~10% of tokens are hallucinated
+  min_hallucination_rate: 0.05        # fail if below (AUPRC breaks)
+
+  # Preprocessing
+  prompt_template: "Q: {question}\nA:"
+  max_length: 512
+---
+# configs/dataset/halueval.yaml
+# ============================================================
+# HaluEval — Controlled hallucination benchmark
+# 5,000 examples with hallucinated + correct answer pairs
+# ============================================================
+
+dataset:
+  name: "halueval"
+  hf_id: "pminervini/HaluEval"
+  hf_config: "qa_samples"
+  split_map:
+    dev: "data[:500]"
+    test: "data[500:2000]"
+  label_column: "hallucinated_answer"
+  question_column: "question"
+
+  expected_hallucination_rate: 0.25
+  min_hallucination_rate: 0.15
+
+  prompt_template: "Q: {question}\nA:"
+  max_length: 512

@@ -1,0 +1,26 @@
+# configs/model/mistral-7b.yaml
+# ============================================================
+# Mistral-7B v0.1 — Phase 2 cross-family transfer test
+# Requirements: A100 40GB, ~14GB VRAM
+# ============================================================
+
+model:
+  name: "mistral-7b"
+  hf_id: "mistralai/Mistral-7B-v0.1"
+  family: "mistral"
+  size_b: 7
+  n_layers: 32
+  d_model: 4096
+  n_heads: 32
+
+  dtype: "float16"
+  device_map: "auto"
+  load_in_4bit: false
+  load_in_8bit: false
+
+  do_sample: false
+  temperature: 1.0
+  max_new_tokens: 200
+
+  expected_k: 12
+  critical_layer_range: [16, 28]

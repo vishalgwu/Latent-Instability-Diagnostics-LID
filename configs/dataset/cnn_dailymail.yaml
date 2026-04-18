@@ -1,0 +1,21 @@
+# configs/dataset/cnn_dailymail.yaml
+# ============================================================
+# CNN/DailyMail — OOD: Summarization (long-form)
+# Tests generalization from QA → summarization domain
+# ============================================================
+
+dataset:
+  name: "cnn_dailymail"
+  hf_id: "cnn_dailymail"
+  hf_config: "3.0.0"
+  split_map:
+    test: "test[:1000]"
+  article_column: "article"
+  summary_column: "highlights"
+
+  expected_hallucination_rate: 0.08    # lower than QA
+  min_hallucination_rate: 0.03
+
+  prompt_template: "Summarize the following article:\n{article}\nSummary:"
+  max_length: 1024                     # longer context for summarization
+  ood: true                            # mark as out-of-distribution

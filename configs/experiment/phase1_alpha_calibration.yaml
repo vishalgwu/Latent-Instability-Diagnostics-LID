@@ -1,0 +1,34 @@
+# configs/experiment/phase1_alpha_calibration.yaml
+# ============================================================
+# Phase 1 — Subtask 1A: Perturbation Magnitude Calibration
+# Grid search: alpha ∈ {0.01, 0.025, 0.05, 0.1}
+#
+# Week 5 KPI: Single optimal alpha identified with AUROC > 0.70
+# Expected optimal: alpha_opt ≈ 0.05
+# ============================================================
+
+defaults:
+  - base
+  - model: llama-7b
+  - dataset: truthfulqa_dev
+  - _self_
+
+experiment:
+  name: "phase1-alpha-calibration"
+  tags: ["phase1", "week5", "calibration", "alpha-sweep"]
+  notes: "Grid search over alpha on TruthfulQA-dev (50 examples). Measure AUROC separability."
+
+lid:
+  alpha: 0.05               # will be swept — see sweep config below
+  alpha_grid: [0.01, 0.025, 0.05, 0.1]
+
+eval:
+  n_examples: 50            # Phase 1: 50 examples per alpha value
+  split: "dev"
+  metrics: [auroc, auprc]
+
+# Hydra multirun sweep (run with: python run.py --multirun lid.alpha=0.01,0.025,0.05,0.1)
+hydra:
+  sweep:
+    dir: outputs/sweeps/alpha_calibration
+    subdir: alpha_${lid.alpha}

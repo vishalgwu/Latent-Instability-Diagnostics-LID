@@ -1,0 +1,27 @@
+# configs/model/llama-70b.yaml
+# ============================================================
+# Llama-2 70B — Phase 2 scaling validation
+# Requirements: 2× A100 80GB (tensor parallel), ~140GB VRAM
+# Use load_in_4bit=true if only 1× A100 80GB available
+# ============================================================
+
+model:
+  name: "llama-70b"
+  hf_id: "meta-llama/Llama-2-70b-hf"
+  family: "llama2"
+  size_b: 70
+  n_layers: 80
+  d_model: 8192
+  n_heads: 64
+
+  dtype: "float16"
+  device_map: "auto"
+  load_in_4bit: false        # set true if VRAM < 140GB
+  load_in_8bit: false
+
+  do_sample: false
+  temperature: 1.0
+  max_new_tokens: 200
+
+  expected_k: 16             # more layers for 80-layer model
+  critical_layer_range: [40, 65]

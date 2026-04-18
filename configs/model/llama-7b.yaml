@@ -1,0 +1,29 @@
+# configs/model/llama-7b.yaml
+# ============================================================
+# Llama-2 7B — Primary development model (Phase 1)
+# Requirements: A100 40GB, ~16GB VRAM
+# ============================================================
+
+model:
+  name: "llama-7b"
+  hf_id: "meta-llama/Llama-2-7b-hf"
+  family: "llama2"
+  size_b: 7
+  n_layers: 32
+  d_model: 4096
+  n_heads: 32
+
+  # Loading
+  dtype: "float16"
+  device_map: "auto"
+  load_in_4bit: false
+  load_in_8bit: false
+
+  # Generation defaults
+  do_sample: false           # greedy for reproducibility
+  temperature: 1.0
+  max_new_tokens: 200
+
+  # lid layer selection defaults (override in experiment config)
+  expected_k: 12             # expected top-K layers
+  critical_layer_range: [16, 28]  # layers 20-28 most anisotropic per Phase.docx
