@@ -1,0 +1,44 @@
+{
+  "week": 2,
+  "model": "meta-llama/Meta-Llama-3-8B",
+  "dataset": "TruthfulQA-dev-100",
+  "annotation": "automated_token_proxy",
+  "results": {
+    "dola": {
+      "auroc": 0.5163767934139616,
+      "auprc": 0.41950223631710404,
+      "fpr_at_tpr80": 0.7682819383259912,
+      "auroc_ci": [
+        0.5025865045985366,
+        0.5309675911988835
+      ],
+      "hallucination_rate": 0.4122216468151217,
+      "n_tokens": 5793,
+      "below_threshold": true
+    },
+    "ssp": {
+      "auroc": 0.5356429725721117,
+      "auprc": 0.4310501904217521,
+      "fpr_at_tpr80": 0.7251101321585903,
+      "auroc_ci": [
+        0.5200531840901929,
+        0.5477874734648254
+      ],
+      "hallucination_rate": 0.4122216468151217,
+      "n_tokens": 5793,
+      "below_threshold": true
+    },
+    "lsd": {
+      "auroc": 0.3091366647235197,
+      "auprc": 0.3021475874786769,
+      "fpr_at_tpr80": 0.9245227606461086,
+      "auroc_ci": [
+        0.2951956871416195,
+        0.3233568860885422
+      ],
+      "hallucination_rate": 0.4122216468151217,
+      "n_tokens": 5793,
+      "below_threshold": true
+    }
+  }
+}
