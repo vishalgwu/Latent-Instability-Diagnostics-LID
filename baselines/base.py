@@ -4,7 +4,7 @@ baselines/base.py
 Abstract base class for ALL hallucination detectors.
 
 CRITICAL DESIGN REQUIREMENT (from 12-Week Plan, Part 1):
-    Every baseline AND lid must implement the same interface:
+    Every baseline AND LID must implement the same interface:
         score(hidden_states, tokens) -> per_token_score
 
     This ensures fair comparison:
@@ -17,7 +17,7 @@ Output contract:
     All detectors return shape [B, T] — batch × sequence_length
     Scores are comparable across methods (higher = more likely hallucination)
 
-Author: MIT lid Research Team
+Author: MIT LID Research Team
 Week  : 1 (skeleton) → Baseline implementations Weeks 2-3
 """
 
@@ -33,7 +33,7 @@ import torch
 @dataclass
 class DetectorConfig:
     """Shared configuration for all detectors."""
-    name: str                              # Human-readable name (e.g., "DoLA", "lid")
+    name: str                              # Human-readable name (e.g., "DoLA", "LID")
     device: str = "cuda"                   # Target device
     batch_size: int = 1                    # Inference batch size
     seed: int = 42                         # Reproducibility seed
@@ -47,7 +47,7 @@ class DetectorOutput:
     """Standardized output from all detectors."""
     scores: torch.Tensor                   # Per-token scores [B, T] (higher = more suspicious)
     tokens: list[list[str]]                # Decoded tokens [B, T]
-    metadata: dict = field(default_factory=dict)  # Method-specific (e.g., layer scores for lid)
+    metadata: dict = field(default_factory=dict)  # Method-specific (e.g., layer scores for LID)
     overhead_ratio: Optional[float] = None # Wall-clock overhead vs clean inference
 
 

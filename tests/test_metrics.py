@@ -13,7 +13,7 @@ TEST CONTRACT (from 12-Week Plan, Week 4 KPIs):
 Run with:
     pytest tests/test_metrics.py -v
 
-Author: MIT lid Research Team
+Author: MIT LID Research Team
 Week  : 1 (skeleton) → Green by Week 4
 """
 

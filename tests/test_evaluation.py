@@ -15,7 +15,7 @@ Tests:
 Run:
     pytest tests/test_evaluation.py -v --tb=short
 
-Author: MIT lid Research Team
+Author: MIT LID Research Team
 Week  : 1 (must be green — eval harness is used from Week 5)
 """
 
@@ -48,7 +48,7 @@ def random_scores():
 
 @pytest.fixture
 def realistic_scores():
-    """Realistic lid-like scores with some separation but not perfect."""
+    """Realistic LID-like scores with some separation but not perfect."""
     rng = np.random.default_rng(42)
     labels = np.array([0]*90 + [1]*10, dtype=float)
     # Hallucinated tokens get higher scores on average
@@ -153,7 +153,7 @@ class TestLeadTimeStats:
         assert stats["coverage"] == pytest.approx(0.0)
 
     def test_positive_rate_threshold(self):
-        """Phase 1 target: positive_rate should exceed 0.5 if lid works."""
+        """Phase 1 target: positive_rate should exceed 0.5 if LID works."""
         lt = [1.5, 0.8, 2.1, 1.0, 0.5]   # all positive
         stats = compute_lead_time_stats(lt)
         assert stats["positive_rate"] > 0.5
@@ -166,7 +166,7 @@ class TestLeadTimeStats:
 class TestEvaluateFn:
     def test_returns_eval_result(self, perfect_scores):
         scores, labels = perfect_scores
-        result = evaluate(scores, labels, method="lid", dataset="TruthfulQA",
+        result = evaluate(scores, labels, method="LID", dataset="TruthfulQA",
                           model="llama-7b", compute_ci=False)
         assert isinstance(result, EvalResult)
 
@@ -181,7 +181,7 @@ class TestEvaluateFn:
     def test_below_threshold_flag(self):
         """AUROC < 0.60 should set below_threshold=True (red flag → escalate)."""
         labels = np.array([0]*90 + [1]*10, dtype=float)
-        # Inverted scores — lid running backwards
+        # Inverted scores — LID running backwards
         scores = np.where(labels == 1, 0.1, 0.9)
         result = evaluate(scores, labels, compute_ci=False)
         assert result.below_threshold is True, \
