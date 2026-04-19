@@ -1,0 +1,1 @@
+{"dataset": "truthfulqa", "total": 817, "hf_id": "truthful_qa/generation", "downloaded": "2026-04-19T19:16:59.343054", "notes": "dev=first 100 (Phase 1 annotation target), test=remaining 717", "splits": {"dev": 100, "full": 817, "test": 717}}

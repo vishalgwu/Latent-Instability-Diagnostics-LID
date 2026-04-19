@@ -1,0 +1,1 @@
+{"dataset": "gsm8k", "total": 1000, "hf_id": "gsm8k/main", "downloaded": "2026-04-19T19:17:09.169215", "notes": "OOD: math reasoning. target=final answer only (extracted from ####).", "splits": {"test": 1000}}

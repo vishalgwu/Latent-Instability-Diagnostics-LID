@@ -1,0 +1,1 @@
+{"dataset": "halueval", "total": 5000, "hf_id": "pminervini/HaluEval/qa_samples", "downloaded": "2026-04-19T19:17:00.745412", "notes": "Deduplicated by question. dev=500, test=4500.", "splits": {"dev": 500, "full": 5000, "test": 4500}}

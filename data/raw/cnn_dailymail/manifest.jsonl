@@ -1,0 +1,1 @@
+{"dataset": "cnn_dailymail", "total": 1000, "hf_id": "cnn_dailymail/3.0.0", "downloaded": "2026-04-19T19:17:06.370444", "notes": "OOD: summarization. dev=200, test=800. Articles truncated 2000 chars.", "splits": {"dev": 200, "full": 1000, "test": 800}}
