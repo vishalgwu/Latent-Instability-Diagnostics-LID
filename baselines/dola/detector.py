@@ -249,31 +249,39 @@ class DoLADetector(BaseDetector):
         )
 
         # Apply final LayerNorm in float32.
-        # model.model.norm has fp16 weights when the model is loaded in fp16.
-        # Passing float32 activations to an fp16 module causes PyTorch to
-        # compute in fp16, re-introducing overflow.  We temporarily promote
-        # the norm weights to float32 and restore them afterwards.
+        #
+        # IMPORTANT — we must NEVER call model.model.norm.float() or
+        # model.lm_head.float() to promote the module in-place.
+        # If an OOM (or any exception) fires mid-computation, the restore
+        # never runs and the model is permanently left in the wrong dtype,
+        # causing c10::Half != float on every subsequent forward pass.
+        #
+        # Safe pattern: extract .weight / .bias as float32 TENSORS
+        # (this creates a new tensor — the module's stored parameter is
+        # untouched) and compute with F.layer_norm / F.linear directly.
         with torch.no_grad():
             try:
-                orig_norm_dtype = next(model.model.norm.parameters()).dtype
-                model.model.norm.float()
-                h_normed = model.model.norm(h)
-                model.model.norm.to(orig_norm_dtype)
+                norm_w = model.model.norm.weight.float()          # new fp32 tensor
+                norm_b = getattr(model.model.norm, "bias", None)
+                norm_b = norm_b.float() if norm_b is not None else None
+                eps    = getattr(model.model.norm, "variance_epsilon",
+                                 getattr(model.model.norm, "eps", 1e-5))
+                # Llama / Mistral use RMSNorm (no bias, no mean subtraction)
+                variance = h.pow(2).mean(-1, keepdim=True)
+                h_normed = h * torch.rsqrt(variance + eps) * norm_w
+                if norm_b is not None:
+                    h_normed = h_normed + norm_b
             except Exception:
-                # Fallback: use raw hidden state if norm is inaccessible
+                # Fallback for unknown norm architectures: use raw hidden state
                 h_normed = h
 
-        # Project through lm_head in float32 for the same reason
+        # Project through lm_head using F.linear with a float32 copy of
+        # the weight — no module state is mutated at any point.
         with torch.no_grad():
-            try:
-                orig_head_dtype = model.lm_head.weight.dtype
-                model.lm_head.float()
-                pre_logits = model.lm_head(h_normed)
-                model.lm_head.to(orig_head_dtype)
-            except Exception:
-                # Fallback: project in original dtype (may still NaN,
-                # but _safe_softmax will clean it)
-                pre_logits = model.lm_head(h_normed)
+            lm_w      = model.lm_head.weight.float()              # new fp32 tensor
+            lm_b      = model.lm_head.bias
+            lm_b      = lm_b.float() if lm_b is not None else None
+            pre_logits = F.linear(h_normed, lm_w, lm_b)          # [B, T, vocab]
 
         pre_probs = self._safe_softmax(
             pre_logits, self.dola_config.temperature
